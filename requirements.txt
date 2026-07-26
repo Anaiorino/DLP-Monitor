@@ -1,0 +1,6 @@
+opencv-contrib-python  # necessário a partir do OpenCV 5.x: CascadeClassifier foi movido para o módulo contrib
+pyautogui
+pyperclip
+keyboard
+psutil
+pillow  # usado pelo admin_panel.py (Tkinter) para exibir screenshots/fotos de webcam

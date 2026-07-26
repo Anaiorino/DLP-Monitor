@@ -1,0 +1,23 @@
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Dados gerados em runtime — não devem ir para o repositório
+alertas.db
+alertas.db-journal
+alertas.db-wal
+alertas.db-shm
+dlp_monitor.log
+evidencias/
+
+# Arquivos de IDE/SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
