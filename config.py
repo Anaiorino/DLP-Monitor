@@ -66,6 +66,35 @@ PROCESSOS_RISCO = {
 }
 
 # ---------------------------------------------------------------------------
+# Detecção de celular apontado para a tela (câmera) + verificação de dado
+# sensível na tela (OCR) — o "scanner" principal do projeto.
+# ---------------------------------------------------------------------------
+
+# Ativar/desativar a detecção de objeto (celular) via YOLOv8.
+# Requer: pip install ultralytics  (baixa o modelo automaticamente na 1ª execução)
+ATIVAR_DETECCAO_CELULAR = os.environ.get("DLP_DETECCAO_CELULAR", "1") == "1"
+
+# Modelo YOLO usado — "yolov8n.pt" é o menor/mais rápido (bom para tempo real
+# em CPU). Modelos maiores (yolov8s.pt, yolov8m.pt) são mais precisos e mais lentos.
+YOLO_MODELO = os.environ.get("DLP_YOLO_MODELO", "yolov8n.pt")
+
+# Confiança mínima (0 a 1) para considerar que o objeto detectado é mesmo um celular
+CONFIANCA_MINIMA_CELULAR = 0.5
+
+# Intervalo mínimo (segundos) entre execuções do modelo de detecção de objeto —
+# ele é pesado, não precisa rodar em todo frame da câmera.
+INTERVALO_MIN_DETECCAO_CELULAR = 2.0
+
+# Caminho do executável do Tesseract-OCR no sistema. No Windows, geralmente:
+# "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+# Deixe None se o Tesseract já estiver no PATH do sistema.
+TESSERACT_CMD = os.environ.get("DLP_TESSERACT_CMD", None)
+
+# Idioma usado pelo OCR (precisa do pacote de idioma instalado no Tesseract).
+# "por" = português. Use "por+eng" se quiser reconhecer português e inglês juntos.
+OCR_IDIOMA = os.environ.get("DLP_OCR_IDIOMA", "por")
+
+# ---------------------------------------------------------------------------
 # Pesos usados no motor de risco (risk_engine.py)
 # ---------------------------------------------------------------------------
 PESOS_EVENTO = {
@@ -75,7 +104,8 @@ PESOS_EVENTO = {
     "PROCESSO_RISCO": 2,   # multiplicado pelo peso do processo específico
     "CAMERA_ROSTO_EXTRA": 4,   # mais de uma pessoa olhando a tela
     "CAMERA_AUSENCIA_SUSPEITA": 1,
-    "CAMERA_OBJETO_SUSPEITO": 5,  # ex.: celular apontado para tela
+    "CAMERA_OBJETO_SUSPEITO": 5,   # celular detectado, mas sem confirmar dado sensível na tela
+    "CAMERA_FOTO_DADOS_SENSIVEIS": 12,  # celular + tela com CPF/telefone/endereço/nome — vai direto pra CRÍTICO
 }
 
 # Limiares de classificação do score acumulado numa janela de tempo

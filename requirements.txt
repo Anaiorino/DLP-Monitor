@@ -4,3 +4,5 @@ pyperclip
 keyboard
 psutil
 pillow  # usado pelo admin_panel.py (Tkinter) para exibir screenshots/fotos de webcam
+ultralytics  # detecção de celular na câmera (YOLOv8) — dependência pesada, inclui torch
+pytesseract  # OCR da tela para checar CPF/telefone/endereço/nome visíveis — requer o Tesseract-OCR instalado no sistema (ver README)

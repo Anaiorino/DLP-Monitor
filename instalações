@@ -1,0 +1,35 @@
+@echo off
+REM Instala as dependências do DLP Monitor na ordem certa.
+REM
+REM Motivo deste script existir: a biblioteca 'ultralytics' traz
+REM 'opencv-python' (sem contrib) como dependência própria. Se ela for
+REM instalada depois do 'opencv-contrib-python', acaba sobrescrevendo o
+REM cv2 e quebrando o CascadeClassifier (usado na detecção de rosto).
+REM Este script sempre reinstala o opencv-contrib-python por último,
+REM garantindo que ele "vença" no final.
+
+echo === Instalando dependencias do requirements.txt ===
+pip install -r requirements.txt
+if errorlevel 1 goto erro
+
+echo.
+echo === Corrigindo conflito opencv-python x opencv-contrib-python ===
+pip uninstall opencv-python -y
+pip install --force-reinstall --no-deps opencv-contrib-python
+if errorlevel 1 goto erro
+
+echo.
+echo === Verificando instalacao do OpenCV ===
+python -c "import cv2; print('OpenCV OK, versao:', cv2.__version__); print(cv2.CascadeClassifier)"
+if errorlevel 1 goto erro
+
+echo.
+echo Instalacao concluida com sucesso!
+goto fim
+
+:erro
+echo.
+echo Algo deu errado durante a instalacao. Veja a mensagem de erro acima.
+
+:fim
+pause

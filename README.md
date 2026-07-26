@@ -31,6 +31,7 @@ dlp_monitor/
 ├── evidence.py               # captura screenshot + foto da webcam
 ├── alert_manager.py         # envia alerta por e-mail / webhook / grava no banco local
 ├── alert_store.py           # banco SQLite local compartilhado (sem rede)
+├── screen_ocr.py             # OCR da tela p/ checar CPF/telefone/endereço/nome visíveis
 ├── monitors/
 │   ├── camera_monitor.py    # rostos extras / ausência suspeita na webcam
 │   ├── clipboard_monitor.py # dados sensíveis copiados (CPF, cartão, etc.)
@@ -101,6 +102,63 @@ python main.py
 O sistema roda em segundo plano, monitorando continuamente. Os logs vão
 para `dlp_monitor.log` e as evidências para a pasta `evidencias/`.
 
+## Scanner de foto de dado sensível (câmera + OCR)
+
+Esta é a funcionalidade principal do projeto: detectar quando alguém tira
+foto da tela com o celular **enquanto ela mostra dado pessoal** (CPF,
+telefone, endereço, ou campos como "nome completo"/"RG").
+
+**Como funciona:**
+
+1. A cada ~1s, a webcam captura um frame e um modelo de detecção de objetos
+   (YOLOv8, treinado no dataset COCO) verifica se há um **celular** na cena.
+2. Se um celular for detectado, o sistema tira um **screenshot da tela
+   naquele instante** e roda **OCR** (leitura de texto na imagem) para
+   checar se há CPF, telefone, CEP, ou rótulos como "nome:"/"endereço"
+   visíveis.
+3. Só quando as duas coisas coincidem — **celular + tela sensível** — é
+   que o evento `CAMERA_FOTO_DADOS_SENSIVEIS` é registrado, com peso
+   suficiente para ir direto ao nível **CRÍTICO** e alertar o
+   administrador com as evidências.
+4. Se o celular for detectado mas a tela não tiver dado sensível
+   confirmado, ainda assim registra um evento de menor gravidade
+   (`CAMERA_OBJETO_SUSPEITO`) — não ignora, mas também não dispara pânico.
+
+Isso evita alarme falso de alguém apenas segurando o celular perto do
+computador sem estar fotografando dado nenhum.
+
+### Instalação extra necessária
+
+Essa funcionalidade depende de duas coisas além do `pip install -r requirements.txt`:
+
+**1. Tesseract-OCR** (motor de OCR — é um programa do sistema, não só uma
+biblioteca Python):
+
+- **Windows**: baixe o instalador em
+  https://github.com/UB-Mannheim/tesseract/wiki e instale normalmente.
+  Durante a instalação, marque o pacote de idioma **Portuguese**.
+  Depois, configure o caminho (ajuste se instalou em outro lugar):
+
+  ```bash
+  set DLP_TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe
+  ```
+
+- **Linux**: `sudo apt install tesseract-ocr tesseract-ocr-por`
+- **macOS**: `brew install tesseract tesseract-lang`
+
+**2. Modelo YOLOv8** — baixado automaticamente na primeira execução do
+`main.py` (precisa de internet nesse primeiro momento; depois fica salvo
+localmente em cache). Se preferir desativar a detecção de celular
+completamente (por exemplo, num computador sem internet ou mais fraco):
+
+```bash
+set DLP_DETECCAO_CELULAR=0
+```
+
+Nesse caso o monitor de câmera continua funcionando normalmente para
+detecção de rosto (mais de uma pessoa / ausência prolongada), só a
+detecção de celular fica desligada.
+
 ## Painel do administrador (programa separado, sem rede)
 
 O painel roda como um **programa desktop independente** (Tkinter), não um
@@ -134,10 +192,10 @@ python admin_panel.py
 
 ## Limitações e próximos passos
 
-- A detecção de "celular apontado para a tela" está deixada como um
-  **gancho** em `camera_monitor.py::_detectar_objeto_suspeito` — para
-  ativá-la, integre um modelo de detecção de objetos (ex.: YOLOv8 via
-  `pip install ultralytics`) e sinalize a classe `cell phone`.
+- A detecção de celular usa o modelo genérico YOLOv8n (rápido, mas não
+  especializado). Para mais precisão em ambientes de produção, considere
+  treinar/usar um modelo mais robusto (ex.: yolov8s.pt/yolov8m.pt) ou uma
+  câmera com melhor ângulo/iluminação da tela.
 - O monitor de USB usa uma heurística simples (`part.opts` no
   Windows / `/media` no Linux); em ambientes reais, vale usar APIs
   nativas do SO (ex.: `WMI` no Windows) para maior precisão.

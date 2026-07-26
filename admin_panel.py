@@ -240,7 +240,13 @@ class PainelAdmin(tk.Tk):
             img.thumbnail((340, 220))
             foto = ImageTk.PhotoImage(img)
             self._imagens_atuais.append(foto)  # evita garbage collection
-            tk.Label(container, image=foto, bg="#12181F").pack(anchor="w")
+
+            label_img = tk.Label(container, image=foto, bg="#12181F", cursor="hand2")
+            label_img.pack(anchor="w")
+            label_img.bind("<Button-1>", lambda _e, c=caminho, t=titulo: self._abrir_visualizacao_grande(c, t))
+
+            tk.Label(container, text="clique para ampliar", bg="#12181F", fg="#4A5563",
+                     font=("Segoe UI", 7, "italic")).pack(anchor="w", pady=(0, 4))
         except ImportError:
             tk.Label(container, text=f"(instale 'pillow' para pré-visualizar: {caminho})",
                      bg="#12181F", fg="#4A5563", font=("Segoe UI", 8, "italic"),
@@ -249,6 +255,62 @@ class PainelAdmin(tk.Tk):
             tk.Label(container, text=f"(erro ao abrir imagem: {exc})",
                      bg="#12181F", fg="#E14B4B", font=("Segoe UI", 8),
                      wraplength=340, justify="left").pack(anchor="w")
+
+    # ------------------------------------------------------------------
+    # Janela de visualização ampliada (abre ao clicar numa miniatura)
+    # ------------------------------------------------------------------
+    def _abrir_visualizacao_grande(self, caminho, titulo):
+        if not caminho or not os.path.exists(caminho):
+            return
+
+        try:
+            from PIL import Image, ImageTk
+        except ImportError:
+            messagebox.showerror("Pillow não instalado", "Instale a biblioteca 'pillow' para ampliar imagens.")
+            return
+
+        try:
+            img_original = Image.open(caminho)
+        except Exception as exc:
+            messagebox.showerror("Erro ao abrir imagem", str(exc))
+            return
+
+        janela = tk.Toplevel(self)
+        janela.title(f"{titulo} — {os.path.basename(caminho)}")
+        janela.configure(bg="#0B0F14")
+
+        # Redimensiona para caber confortavelmente na tela do usuário,
+        # sem distorcer a imagem e sem ficar maior que a original.
+        largura_max = int(self.winfo_screenwidth() * 0.85)
+        altura_max = int(self.winfo_screenheight() * 0.85)
+
+        img_ampliada = img_original.copy()
+        img_ampliada.thumbnail((largura_max, altura_max - 60))  # reserva espaço p/ barra de título/rodapé
+
+        foto_grande = ImageTk.PhotoImage(img_ampliada)
+        # guarda a referência na própria janela para não ser descartada pelo garbage collector
+        janela.imagem_referencia = foto_grande
+
+        tk.Label(janela, text=titulo, bg="#0B0F14", fg="#E4E9EF",
+                 font=("Segoe UI", 11, "bold")).pack(pady=(10, 4))
+
+        tk.Label(janela, image=foto_grande, bg="#0B0F14").pack(padx=12, pady=(0, 6))
+
+        largura_original, altura_original = img_original.size
+        tk.Label(
+            janela,
+            text=f"Resolução original: {largura_original}x{altura_original}  ·  {caminho}",
+            bg="#0B0F14", fg="#7C8798", font=("Consolas", 8),
+        ).pack(pady=(0, 8))
+
+        tk.Button(janela, text="Fechar", command=janela.destroy,
+                  bg="#232B35", fg="#E4E9EF", activebackground="#2E3846",
+                  relief="flat", padx=16, pady=4).pack(pady=(0, 12))
+
+        janela.bind("<Escape>", lambda _e: janela.destroy())
+        janela.transient(self)
+        janela.grab_set()
+        janela.focus_set()
 
 
 def main():
