@@ -1,10 +1,4 @@
-"""
-Captura de evidências no momento do evento suspeito:
- - Screenshot da tela do usuário
- - Foto da webcam (se disponível)
 
-Ambos são salvos com timestamp e retornados para anexo no alerta.
-"""
 
 import os
 import time
@@ -20,7 +14,7 @@ def _timestamp():
 
 
 def capturar_screenshot():
-    """Retorna o caminho do arquivo de print da tela, ou None em caso de falha."""
+ 
     try:
         import pyautogui
         caminho = os.path.join(config.EVIDENCE_DIR, f"print_{_timestamp()}.png")
@@ -34,7 +28,7 @@ def capturar_screenshot():
 
 
 def capturar_foto_webcam():
-    """Retorna o caminho da foto da webcam, ou None se não houver câmera/falha."""
+ 
     try:
         import cv2
         cam = cv2.VideoCapture(0)
@@ -56,7 +50,7 @@ def capturar_foto_webcam():
 
 
 def capturar_evidencias():
-    """Captura screenshot + foto da webcam. Retorna dict com os caminhos (podem ser None)."""
+   
     return {
         "screenshot": capturar_screenshot(),
         "webcam": capturar_foto_webcam(),
