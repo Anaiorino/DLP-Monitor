@@ -1,7 +1,4 @@
-"""
-Motor de risco: acumula eventos suspeitos numa janela de tempo e calcula
-um grau de perigo de vazamento (BAIXO, MÉDIO, ALTO, CRÍTICO).
-"""
+
 
 import time
 import threading
@@ -25,16 +22,10 @@ class Evento:
 
 
 class RiskEngine:
-    """
-    Recebe eventos de todos os monitores (câmera, teclado, clipboard,
-    processos, USB) e decide quando o risco acumulado justifica um alerta.
-    """
+  
 
     def __init__(self, on_alert_callback):
-        """
-        on_alert_callback(nivel: str, score: int, eventos: list[Evento])
-        é chamado sempre que um novo alerta deve ser disparado.
-        """
+      
         self._eventos = deque()
         self._lock = threading.Lock()
         self._on_alert = on_alert_callback
