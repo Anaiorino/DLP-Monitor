@@ -1,19 +1,4 @@
-"""
-DLP Monitor — Painel do Administrador (programa desktop, sem rede/web).
 
-Executa como um processo independente do monitor (main.py). Lê os alertas
-diretamente do banco SQLite local (alertas.db) e exibe numa interface
-gráfica nativa (Tkinter, incluso no Python — nenhuma dependência de
-servidor/HTTP/porta de rede).
-
-Uso:
-    python admin_panel.py
-
-Opcional: proteja o acesso ao painel definindo uma senha local — ver
-config.PAINEL_SENHA. Como é um programa local (não web), a "senha" serve
-apenas para impedir uso casual por quem sentar na máquina, não substitui
-o controle de acesso do próprio sistema operacional (conta de usuário).
-"""
 
 import os
 import time
@@ -33,7 +18,7 @@ CORES_NIVEL = {
     "CRITICO": "#E14B4B",
 }
 
-INTERVALO_ATUALIZACAO_MS = 3000  # verifica novos alertas a cada 3s
+INTERVALO_ATUALIZACAO_MS = 3000 
 
 
 class PainelAdmin(tk.Tk):
@@ -43,7 +28,7 @@ class PainelAdmin(tk.Tk):
         self.geometry("1100x650")
         self.configure(bg="#0B0F14")
         self._alerta_selecionado_id = None
-        self._imagens_atuais = []  # mantém referência para o Tkinter não descartar as imagens
+        self._imagens_atuais = []  
 
         self._montar_estilo()
         self._montar_layout()
@@ -80,7 +65,7 @@ class PainelAdmin(tk.Tk):
                                       font=("Consolas", 10))
         self.label_status.pack(side="right")
 
-        # Corpo: lista à esquerda, detalhe à direita
+        # Corpo
         corpo = tk.Frame(self, bg="#0B0F14")
         corpo.pack(fill="both", expand=True, padx=16, pady=8)
 
@@ -119,7 +104,7 @@ class PainelAdmin(tk.Tk):
             expand=True)
 
     # ------------------------------------------------------------------
-    # Senha local opcional
+    # Senha local
     # ------------------------------------------------------------------
     def _verificar_senha_opcional(self):
         if not config.PAINEL_SENHA:
@@ -130,9 +115,7 @@ class PainelAdmin(tk.Tk):
             self.destroy()
             os._exit(1)
 
-    # ------------------------------------------------------------------
-    # Atualização periódica (polling local do SQLite, sem rede)
-    # ------------------------------------------------------------------
+   
     def _agendar_atualizacao(self):
         self.after(INTERVALO_ATUALIZACAO_MS, self._ciclo_atualizacao)
 
@@ -170,9 +153,7 @@ class PainelAdmin(tk.Tk):
         if selecionado_antes and self.tree.exists(str(selecionado_antes)):
             self.tree.selection_set(str(selecionado_antes))
 
-    # ------------------------------------------------------------------
-    # Detalhe do alerta selecionado
-    # ------------------------------------------------------------------
+  
     def _ao_selecionar(self, _evento):
         selecao = self.tree.selection()
         if not selecao:
@@ -239,7 +220,7 @@ class PainelAdmin(tk.Tk):
             img = Image.open(caminho)
             img.thumbnail((340, 220))
             foto = ImageTk.PhotoImage(img)
-            self._imagens_atuais.append(foto)  # evita garbage collection
+            self._imagens_atuais.append(foto) 
 
             label_img = tk.Label(container, image=foto, bg="#12181F", cursor="hand2")
             label_img.pack(anchor="w")
@@ -256,9 +237,7 @@ class PainelAdmin(tk.Tk):
                      bg="#12181F", fg="#E14B4B", font=("Segoe UI", 8),
                      wraplength=340, justify="left").pack(anchor="w")
 
-    # ------------------------------------------------------------------
-    # Janela de visualização ampliada (abre ao clicar numa miniatura)
-    # ------------------------------------------------------------------
+-
     def _abrir_visualizacao_grande(self, caminho, titulo):
         if not caminho or not os.path.exists(caminho):
             return
@@ -279,16 +258,15 @@ class PainelAdmin(tk.Tk):
         janela.title(f"{titulo} — {os.path.basename(caminho)}")
         janela.configure(bg="#0B0F14")
 
-        # Redimensiona para caber confortavelmente na tela do usuário,
-        # sem distorcer a imagem e sem ficar maior que a original.
+       
         largura_max = int(self.winfo_screenwidth() * 0.85)
         altura_max = int(self.winfo_screenheight() * 0.85)
 
         img_ampliada = img_original.copy()
-        img_ampliada.thumbnail((largura_max, altura_max - 60))  # reserva espaço p/ barra de título/rodapé
+        img_ampliada.thumbnail((largura_max, altura_max - 60)) 
 
         foto_grande = ImageTk.PhotoImage(img_ampliada)
-        # guarda a referência na própria janela para não ser descartada pelo garbage collector
+       
         janela.imagem_referencia = foto_grande
 
         tk.Label(janela, text=titulo, bg="#0B0F14", fg="#E4E9EF",
