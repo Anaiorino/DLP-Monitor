@@ -1,9 +1,4 @@
 """
-Dispara um alerta de teste manualmente, sem precisar esperar uma detecção
-real (PrintScreen, USB, clipboard, etc.). Útil para testar se o painel
-admin (admin_panel.py) está recebendo e exibindo os alertas corretamente.
-
-Uso:
     python test_alert.py                     # alerta ALTO com evidências reais
     python test_alert.py --nivel CRITICO
     python test_alert.py --sem-evidencia      # não tira print/foto, só testa o fluxo
@@ -65,7 +60,7 @@ def main():
 
     alert_manager.disparar(nivel, score_total, eventos_teste, evidencias)
 
-    print("\n✅ Alerta de teste enviado! Abra (ou atualize) o admin_panel.py para conferir.")
+    print("\n Alerta de teste enviado.")
 
 
 if __name__ == "__main__":
