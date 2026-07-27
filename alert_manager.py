@@ -1,7 +1,4 @@
-"""
-Envia o alerta ao administrador por e-mail (com evidências anexadas) e,
-opcionalmente, para um webhook (Slack/Teams/n8n/etc).
-"""
+
 
 import logging
 import smtplib
@@ -90,7 +87,7 @@ def enviar_webhook(nivel, score_total, eventos, evidencias):
 def disparar(nivel, score_total, eventos, evidencias):
     logger.warning("ALERTA %s | score=%d | eventos=%d", nivel, score_total, len(eventos))
 
-    # Sempre grava no banco local — é o que alimenta o painel admin (admin_panel.py)
+ 
     try:
         alert_store.salvar_alerta(nivel, score_total, eventos, evidencias)
     except Exception as exc:
