@@ -1,23 +1,18 @@
 
 import os
 
-# ---------------------------------------------------------------------------
-# Diretorios
-# ---------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EVIDENCE_DIR = os.path.join(BASE_DIR, "evidencias")
 LOG_FILE = os.path.join(BASE_DIR, "dlp_monitor.log")
-DB_PATH = os.path.join(BASE_DIR, "alertas.db")  # banco local lido pelo admin_panel.py
+DB_PATH = os.path.join(BASE_DIR, "alertas.db")  
 
 os.makedirs(EVIDENCE_DIR, exist_ok=True)
 
-# ---------------------------------------------------------------------------
-# Email do adm ( alert_manager.py)
-# ---------------------------------------------------------------------------
+
 SMTP_HOST = os.environ.get("DLP_SMTP_HOST", "smtp.seudominio.com")
 SMTP_PORT = int(os.environ.get("DLP_SMTP_PORT", 587))
 SMTP_USER = os.environ.get("DLP_SMTP_USER", "alertas@seudominio.com")
-SMTP_PASSWORD = os.environ.get("DLP_SMTP_PASSWORD", "")  # nunca deixe senha em texto puro no código
+SMTP_PASSWORD = os.environ.get("DLP_SMTP_PASSWORD", "")  
 ADMIN_EMAIL = os.environ.get("DLP_ADMIN_EMAIL", "admin@seudominio.com")
 
 # Alternativa: webhook (Slack/Teams/n8n)
