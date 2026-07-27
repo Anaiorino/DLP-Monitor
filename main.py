@@ -1,20 +1,4 @@
-"""
-DLP Monitor — Ponto de entrada principal.
 
-Inicializa todos os monitores (câmera, teclado, clipboard, USB, processos),
-alimenta o motor de risco e dispara alertas ao administrador com evidências
-(screenshot + foto da webcam) quando o grau de perigo ultrapassa o limiar
-configurado em config.py.
-
-IMPORTANTE (conformidade legal — LGPD):
-Este software monitora ativamente tela, área de transferência e câmera do
-usuário. Antes de utilizá-lo em ambiente corporativo:
-  1. Informe claramente os colaboradores sobre o monitoramento (política
-     de uso aceitável assinada, aviso no login, etc.).
-  2. Restrinja o uso da câmera e coleta de evidências à finalidade de
-     segurança da informação, com base legal e retenção adequadas.
-  3. Consulte o time jurídico/DPO da empresa antes de colocar em produção.
-"""
 
 import logging
 import signal
