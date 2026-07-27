@@ -1,13 +1,3 @@
-"""
-Armazenamento local de alertas em SQLite (sem rede, sem servidor).
-
-Usado por dois programas independentes:
- - main.py (monitor): grava os alertas conforme são detectados.
- - admin_panel.py (painel): lê o mesmo arquivo periodicamente para exibir.
-
-O SQLite lida nativamente com múltiplos processos lendo/escrevendo no mesmo
-arquivo (com locking interno), o que é suficiente para este caso de uso.
-"""
 
 import sqlite3
 import time
@@ -24,7 +14,7 @@ _lock = threading.Lock()
 
 def _conectar():
     conn = sqlite3.connect(config.DB_PATH, timeout=10)
-    conn.execute("PRAGMA journal_mode=WAL")  # melhora concorrência leitura/escrita
+    conn.execute("PRAGMA journal_mode=WAL")  
     return conn
 
 
@@ -74,7 +64,7 @@ def salvar_alerta(nivel, score_total, eventos, evidencias):
 
 
 def listar_alertas(limite=200, apenas_nao_lidos=False):
-    """Retorna os alertas mais recentes primeiro, como lista de dicts."""
+   
     query = "SELECT id, timestamp, nivel, score_total, eventos_json, screenshot_path, webcam_path, lido FROM alertas"
     if apenas_nao_lidos:
         query += " WHERE lido = 0"
