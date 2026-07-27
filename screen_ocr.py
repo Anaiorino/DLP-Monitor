@@ -1,16 +1,4 @@
-"""
-Verifica, via OCR (leitura óptica de caracteres), se a tela atual está
-exibindo dados pessoais sensíveis no momento — CPF, telefone, e campos
-rotulados como "nome", "endereço", "RG", etc.
 
-Usado em conjunto com a detecção de celular na câmera: só faz sentido
-disparar um alerta crítico de "foto tirada de dado sensível" quando as
-DUAS coisas coincidem — celular apontado para a tela E a tela mostrando
-algo sensível naquele instante.
-
-Requer o motor Tesseract-OCR instalado no sistema (não é só biblioteca
-Python) — ver instruções no README.
-"""
 
 import re
 import logging
@@ -19,12 +7,12 @@ import config
 
 logger = logging.getLogger("dlp_monitor.screen_ocr")
 
-# Regex de dados sensíveis, focado no que aparece em documentos/cadastros BR
+# Rgex de dados sensíveis, focado no que aparece em documentos br
 _REGEX_CPF = re.compile(r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b")
 _REGEX_TELEFONE = re.compile(r"\(?\d{2}\)?\s?9?\d{4}-?\d{4}\b")
 _REGEX_CEP = re.compile(r"\b\d{5}-?\d{3}\b")
 
-# Rótulos de campo que costumam anteceder dado pessoal em formulários/documentos
+# Rotulos de campo que costumam anteceder dado pessoal em formulários
 _LABELS_SENSIVEIS = [
     "cpf", "rg:", "nome completo", "nome:", "endereço", "endereco",
     "telefone", "celular:", "data de nascimento", "nascimento:",
@@ -34,7 +22,7 @@ _tesseract_configurado = False
 
 
 def _configurar_tesseract():
-    """Configura o caminho do executável do Tesseract, se definido em config.py."""
+    
     global _tesseract_configurado
     if _tesseract_configurado:
         return
@@ -48,7 +36,7 @@ def _configurar_tesseract():
 
 
 def _extrair_texto_da_tela():
-    """Tira um screenshot e roda OCR nele. Retorna o texto em minúsculas, ou None se falhar."""
+    
     _configurar_tesseract()
     try:
         import pyautogui
@@ -68,11 +56,7 @@ def _extrair_texto_da_tela():
 
 
 def tela_contem_dado_sensivel():
-    """
-    Retorna (True, motivo) se a tela atual parece conter dado pessoal sensível
-    (CPF, telefone, CEP, ou um rótulo como 'nome completo'/'endereço').
-    Retorna (False, None) caso contrário ou se o OCR falhar.
-    """
+   
     texto = _extrair_texto_da_tela()
     if not texto:
         return False, None
