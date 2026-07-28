@@ -17,8 +17,7 @@ potencialmente sensíveis, inclusive de terceiros que apareçam na câmera.
 - Defina base legal, finalidade específica e prazo de retenção das
   evidências coletadas, conforme a LGPD (Lei 13.709/2018).
 - Restrinja o acesso às evidências apenas a pessoas autorizadas
-  (ex.: segurança da informação / RH).
-- Consulte o DPO / jurídico da sua empresa antes do deploy.
+
 
 ## Arquitetura
 
