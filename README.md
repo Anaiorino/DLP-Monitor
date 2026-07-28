@@ -1,5 +1,7 @@
 # DLP Monitor — Sistema de Detecção de Risco de Vazamento de Dados
 
+#Projeto em Andamento
+
 Software de monitoramento (DLP — *Data Loss Prevention*) que observa sinais de
 possível vazamento de dados no computador do usuário (câmera, teclado,
 área de transferência, processos, dispositivos USB), calcula um **grau de
